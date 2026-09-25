@@ -76,6 +76,24 @@
       "costPrice": 390,
       "stock": 7,
       "notes": "Visual gamer com boa ventilação."
+    },
+    {
+      "id": 1790311931479,
+      "name": "RX7600 8G-F/V2 - Taurus Tec e Info",
+      "category": "Placa de Vídeo",
+      "brand": "Radeon",
+      "costPrice": 1997.97,
+      "stock": 1,
+      "notes": "Preço consultado em BoaDica: https://www.boadica.com.br/produto/215861"
+    },
+    {
+      "id": 1790312119383,
+      "name": "24GN60R-B.AWZM - Strix Info",
+      "category": "Monitor",
+      "brand": "LG",
+      "costPrice": 599.98,
+      "stock": 1,
+      "notes": "Preço consultado em BoaDica: https://www.boadica.com.br/produto/198523"
     }
   ],
   "clients": [

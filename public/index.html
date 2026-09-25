@@ -37,7 +37,7 @@
           <img class="brand-logo small" src="logo.webp" alt="Beb Games" />
         </div>
         <div class="topbar-actions">
-          <span id="userBadge">Usuário</span>
+          <button id="mobileMenuButton" class="mobile-menu-button" type="button" aria-label="Abrir menu">☰</button>
           <button id="logoutButton" class="secondary">Sair</button>
         </div>
       </header>
@@ -77,6 +77,22 @@
 
           <section id="catalogSection" class="panel">
             <h3>Catálogo de peças</h3>
+            <div class="marketplace-search">
+              <div class="marketplace-search-heading">
+                <strong>Buscar preços no BoaDica</strong>
+                <span>Consulte ofertas e use um resultado para preencher o cadastro.</span>
+              </div>
+              <form id="marketplaceSearchForm" class="marketplace-search-form">
+                <select id="marketplaceRegion" aria-label="Região das lojas">
+                  <option value="all">Todas as regiões</option>
+                  <option value="zona-oeste">Lojas da Zona Oeste</option>
+                </select>
+                <input type="search" id="marketplaceSearchInput" placeholder="Ex.: Ryzen 5 5600G" required />
+                <button type="submit">Buscar preços</button>
+              </form>
+              <p id="marketplaceSearchMessage" class="marketplace-search-message"></p>
+              <div id="marketplaceResults" class="marketplace-results"></div>
+            </div>
             <div class="catalog-workspace">
               <aside id="catalogFilters" class="catalog-filters"></aside>
               <div id="catalogGroupsContainer" class="catalog-groups"></div>
@@ -97,6 +113,9 @@
                   <option value="Fonte">Fonte</option>
                   <option value="Placa de Vídeo">Placa de Vídeo</option>
                   <option value="Gabinetes">Gabinetes</option>
+                  <option value="Cooler">Cooler</option>
+                  <option value="Monitor">Monitor</option>
+                  <option value="Periféricos">Periféricos</option>
                 </select>
               </label>
 
@@ -183,7 +202,7 @@
 
                 <div class="quick-client">
                   <div class="quick-client-heading">
-                    <strong>Cliente rápido</strong>
+                    <strong>Cadastro rápido</strong>
                     <span>Cadastre nome e telefone durante o orçamento</span>
                   </div>
                   <div class="quick-client-fields">
@@ -268,7 +287,9 @@
                 </div>
 
                 <div class="quote-actions">
-                  <button id="printQuoteButton" type="button" class="secondary">Imprimir PDF</button>
+                  <button id="printQuoteButton" type="button" class="secondary" aria-label="Imprimir orçamento em PDF">
+                    🖨️ Imprimir PDF
+                  </button>
                   <button id="saveQuoteButton" class="primary">Salvar orçamento</button>
                 </div>
               </div>

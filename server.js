@@ -245,6 +245,78 @@ app.delete('/api/catalog/:id', authMiddleware, (req, res) => {
   res.json({ success: true });
 });
 
+app.get('/api/marketplace/boadica/search', authMiddleware, async (req, res) => {
+  const query = String(req.query.q || '').trim();
+  const region = String(req.query.region || 'all').trim().toLowerCase();
+
+  if (query.length < 2) {
+    return res.status(400).json({ message: 'Informe pelo menos dois caracteres para buscar.' });
+  }
+
+  try {
+    const requestHeaders = { Accept: 'application/json', 'User-Agent': 'BebGames/1.0' };
+    const suggestionsResponse = await fetch(
+      `https://boadica.com.br/api/busca/sugestoes?termo=${encodeURIComponent(query)}`,
+      { headers: requestHeaders }
+    );
+
+    if (!suggestionsResponse.ok) {
+      return res.status(502).json({ message: 'O BoaDica não respondeu à busca.' });
+    }
+
+    const suggestions = await suggestionsResponse.json();
+    const products = await Promise.all((suggestions || []).slice(0, 3).map(async (suggestion) => {
+      const productResponse = await fetch(
+        `https://boadica.com.br/api/produto/${encodeURIComponent(suggestion.codProduto)}`,
+        { headers: requestHeaders }
+      );
+
+      if (!productResponse.ok) return null;
+      return productResponse.json();
+    }));
+
+    const results = products
+      .filter(Boolean)
+      .flatMap((product) => (product.ofertas || []).map((offer) => ({
+        id: `${product.produto.codProduto}-${offer.codLoja}`,
+        title: `${product.produto.modelo} - ${offer.nome}`,
+        price: Number(offer.preco || 0),
+        permalink: `https://www.boadica.com.br/produto/${product.produto.codProduto}`,
+        thumbnail: product.produto.urlImagem,
+        neighborhood: offer.bairro || '',
+        city: offer.cidade || '',
+        state: offer.estado || ''
+      })))
+      .filter((item) => item.price > 0)
+      .filter((item) => region !== 'zona-oeste' || isWestZoneOffer(item))
+      .sort((first, second) => first.price - second.price)
+      .slice(0, 8);
+
+    res.json(results);
+  } catch (error) {
+    res.status(502).json({ message: 'Não foi possível consultar o BoaDica agora.' });
+  }
+});
+
+function isWestZoneOffer(offer) {
+  const westZoneNeighborhoods = [
+    'anil', 'bangu', 'barra da tijuca', 'barra de guaratiba', 'camorim', 'campo grande',
+    'cidade de deus', 'curicica', 'deodoro', 'gardênia azul', 'guaratiba',
+    'honório gurgel', 'ilha de guaratiba', 'inguá', 'itanhangá', 'jacarepaguá', 'joá',
+    'mallet', 'paciência', 'padre miguel', 'pechincha', 'praça seca', 'realengo',
+    'recreio dos bandeirantes', 'santa cruz', 'santíssimo', 'senador camará', 'senador vasconcelos',
+    'sepetiba', 'sulacap', 'taquara', 'tanque', 'vargem grande', 'vargem pequena', 'vila militar'
+  ];
+  const normalizeLocation = (value) => String(value)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const neighborhood = normalizeLocation(offer.neighborhood);
+  return westZoneNeighborhoods.some((item) => neighborhood.includes(normalizeLocation(item)));
+}
+
 app.get('/api/clients', authMiddleware, (req, res) => {
   const data = getData();
   res.json(data.clients);

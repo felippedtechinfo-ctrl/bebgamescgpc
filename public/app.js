@@ -13,13 +13,19 @@ const loginScreen = document.getElementById('loginScreen');
 const appScreen = document.getElementById('app');
 const loginForm = document.getElementById('loginForm');
 const loginMessage = document.getElementById('loginMessage');
-const userBadge = document.getElementById('userBadge');
 
 const navButtons = document.querySelectorAll('.nav');
 const panels = document.querySelectorAll('.panel');
+const sidebar = document.querySelector('.sidebar');
+const mobileMenuButton = document.getElementById('mobileMenuButton');
 
 const settingsForm = document.getElementById('settingsForm');
 const catalogForm = document.getElementById('catalogForm');
+const marketplaceSearchForm = document.getElementById('marketplaceSearchForm');
+const marketplaceRegion = document.getElementById('marketplaceRegion');
+const marketplaceSearchInput = document.getElementById('marketplaceSearchInput');
+const marketplaceResults = document.getElementById('marketplaceResults');
+const marketplaceSearchMessage = document.getElementById('marketplaceSearchMessage');
 const clientForm = document.getElementById('clientForm');
 const saveQuoteButton = document.getElementById('saveQuoteButton');
 const logoutButton = document.getElementById('logoutButton');
@@ -32,7 +38,10 @@ const PC_ASSEMBLY_CATEGORIES = [
   'SSD',
   'Fonte',
   'Placa de Vídeo',
-  'Gabinetes'
+  'Gabinetes',
+  'Cooler',
+  'Monitor',
+  'Periféricos'
 ];
 
 function formatMoney(value) {
@@ -62,6 +71,9 @@ function getCategoryIcon(category) {
     Fonte: '🔋',
     'Placa de Vídeo': '🎮',
     Gabinetes: '🖥️',
+    Cooler: '❄️',
+    Monitor: '🖥️',
+    Periféricos: '⌨️',
     Outros: '📦'
   };
 
@@ -111,7 +123,32 @@ function renderNav() {
   navButtons.forEach((button) => {
     button.addEventListener('click', () => {
       setActiveSection(button.dataset.section);
+      if (window.innerWidth <= 768 && sidebar) {
+        sidebar.classList.remove('mobile-open');
+      }
     });
+  });
+
+  if (mobileMenuButton) {
+    mobileMenuButton.addEventListener('click', () => {
+      if (!sidebar) return;
+      sidebar.classList.toggle('mobile-open');
+      const isOpen = sidebar.classList.contains('mobile-open');
+      mobileMenuButton.setAttribute('aria-expanded', String(isOpen));
+    });
+  }
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768 && sidebar) {
+      sidebar.classList.remove('mobile-open');
+      sidebar.classList.remove('desktop-hidden');
+      if (mobileMenuButton) {
+        mobileMenuButton.setAttribute('aria-expanded', 'false');
+      }
+    } else if (mobileMenuButton) {
+      sidebar.classList.remove('desktop-hidden');
+      mobileMenuButton.setAttribute('aria-expanded', String(sidebar?.classList.contains('mobile-open')));
+    }
   });
 }
 
@@ -138,7 +175,8 @@ function renderCatalogFilters() {
   const filterContainer = document.getElementById('catalogFilters');
   if (!filterContainer) return;
 
-  const categories = ['Todos', ...new Set(state.catalog.map((item) => item.category || 'Outros'))];
+  const catalogCategories = state.catalog.map((item) => item.category || 'Outros');
+  const categories = ['Todos', ...new Set([...PC_ASSEMBLY_CATEGORIES, ...catalogCategories])];
   filterContainer.innerHTML = '';
 
   categories.forEach((category) => {
@@ -261,7 +299,10 @@ function renderCatalogTable() {
         <p>${item.notes || 'Sem observações cadastradas.'}</p>
         <div class="catalog-card-footer">
           <strong>${formatMoney(salePrice)}</strong>
-          <button type="button" class="add-card-button" data-add-card="${item.id}">Adicionar</button>
+          <div class="catalog-card-actions">
+            <button type="button" class="add-card-button" data-add-card="${item.id}">Adicionar</button>
+            <button type="button" class="remove-card-button" data-delete-card="${item.id}">Remover</button>
+          </div>
         </div>
       `;
       productGrid.appendChild(card);
@@ -290,6 +331,20 @@ function renderCatalogTable() {
       });
 
       renderQuoteItems();
+    });
+  });
+
+  document.querySelectorAll('[data-delete-card]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const item = state.catalog.find((product) => String(product.id) === String(button.dataset.deleteCard));
+      if (!item || !window.confirm(`Remover "${item.name}" do catálogo?`)) return;
+
+      try {
+        await api(`/api/catalog/${item.id}`, { method: 'DELETE' });
+        await loadDashboard();
+      } catch (error) {
+        showMessage(loginMessage, error.message, 'error');
+      }
     });
   });
 }
@@ -538,7 +593,6 @@ loginForm.addEventListener('submit', async (event) => {
 
     state.token = payload.token;
     localStorage.setItem('bebGamesToken', payload.token);
-    userBadge.textContent = payload.user.name;
     toggleAuth(true);
     setActiveSection('quotesSection');
     await loadDashboard();
@@ -591,6 +645,70 @@ catalogForm.addEventListener('submit', async (event) => {
     await loadDashboard();
   } catch (error) {
     showMessage(loginMessage, error.message, 'error');
+  }
+});
+
+marketplaceSearchForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  marketplaceResults.innerHTML = '';
+  marketplaceSearchMessage.textContent = 'Buscando no BoaDica...';
+
+  try {
+    const results = await api(`/api/marketplace/boadica/search?q=${encodeURIComponent(marketplaceSearchInput.value.trim())}&region=${encodeURIComponent(marketplaceRegion.value)}`);
+
+    if (results.length === 0) {
+      marketplaceSearchMessage.textContent = 'Nenhum produto encontrado.';
+      return;
+    }
+
+    marketplaceSearchMessage.textContent = `${results.length} resultado(s) encontrado(s).`;
+    results.forEach((result) => {
+      const card = document.createElement('article');
+      card.className = 'marketplace-result';
+
+      const details = document.createElement('div');
+      details.className = 'marketplace-result-details';
+
+      const title = document.createElement('strong');
+      title.textContent = result.title;
+
+      const price = document.createElement('span');
+      price.textContent = formatMoney(result.price);
+
+      details.append(title, price);
+
+      const actions = document.createElement('div');
+      actions.className = 'marketplace-result-actions';
+
+      const link = document.createElement('a');
+      link.href = result.permalink;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = 'Ver anúncio';
+
+      const useButton = document.createElement('button');
+      useButton.type = 'button';
+      useButton.textContent = 'Usar preço';
+      useButton.addEventListener('click', () => {
+        document.getElementById('catalogName').value = result.title;
+        document.getElementById('catalogCostPrice').value = result.price.toFixed(2);
+        document.getElementById('catalogNotes').value = `Preço consultado no BoaDica: ${result.permalink}`;
+        marketplaceSearchMessage.textContent = 'Dados preenchidos no cadastro abaixo.';
+        document.getElementById('catalogName').focus();
+      });
+
+      actions.append(link, useButton);
+      card.append(details, actions);
+      marketplaceResults.appendChild(card);
+    });
+  } catch (error) {
+    marketplaceSearchMessage.textContent = error.message;
+    const searchLink = document.createElement('a');
+    searchLink.href = `https://www.boadica.com.br/busca?termo=${encodeURIComponent(marketplaceSearchInput.value.trim())}`;
+    searchLink.target = '_blank';
+    searchLink.rel = 'noopener noreferrer';
+    searchLink.textContent = 'Abrir busca no BoaDica';
+    marketplaceResults.appendChild(searchLink);
   }
 });
 
@@ -856,7 +974,6 @@ if (!state.token) {
 } else {
   toggleAuth(true);
   setActiveSection('quotesSection');
-  userBadge.textContent = 'Carregando...';
   loadDashboard().catch((error) => {
     showMessage(loginMessage, error.message, 'error');
   });
