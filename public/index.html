@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Beb Games | Orçamentos</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="loginScreen" class="auth-screen">
+      <div class="auth-card">
+        <div class="brand-block">
+          <img class="brand-logo" src="logo.webp" alt="Beb Games" />
+        </div>
+
+        <form id="loginForm">
+          <label>
+            Usuário
+            <input type="text" id="username" placeholder="admin" required />
+          </label>
+
+          <label>
+            Senha
+            <input type="password" id="password" placeholder="••••••••" required />
+          </label>
+
+          <button type="submit">Entrar</button>
+        </form>
+
+        <p id="loginMessage" class="message"></p>
+      </div>
+    </div>
+
+    <div id="app" class="hidden">
+      <header class="topbar">
+        <div class="brand-inline">
+          <img class="brand-logo small" src="logo.webp" alt="Beb Games" />
+        </div>
+        <div class="topbar-actions">
+          <span id="userBadge">Usuário</span>
+          <button id="logoutButton" class="secondary">Sair</button>
+        </div>
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar">
+          <nav>
+            <button class="nav active" data-section="configSection">Configuração</button>
+            <button class="nav" data-section="catalogSection">Catálogo</button>
+            <button class="nav" data-section="clientsSection">Clientes</button>
+            <button class="nav" data-section="quotesSection">Orçamentos</button>
+          </nav>
+        </aside>
+
+        <main class="content">
+          <section id="configSection" class="panel active-panel">
+            <h3>Configuração da loja</h3>
+            <form id="settingsForm" class="grid-form">
+              <label>
+                Nome da loja
+                <input type="text" id="storeNameInput" />
+              </label>
+
+              <label>
+                Margem (%)
+                <input type="number" id="profitMarginInput" min="0" step="1" />
+              </label>
+
+              <label>
+                Desconto padrão (%)
+                <input type="number" id="defaultDiscountInput" min="0" step="0.01" />
+              </label>
+
+              <button type="submit">Salvar</button>
+            </form>
+          </section>
+
+          <section id="catalogSection" class="panel">
+            <h3>Catálogo de peças</h3>
+            <div class="catalog-workspace">
+              <aside id="catalogFilters" class="catalog-filters"></aside>
+              <div id="catalogGroupsContainer" class="catalog-groups"></div>
+            </div>
+            <form id="catalogForm" class="grid-form">
+              <label>
+                Nome
+                <input type="text" id="catalogName" required />
+              </label>
+
+              <label>
+                Categoria
+                <select id="catalogCategory">
+                  <option value="Processadores">Processadores</option>
+                  <option value="Placa Mãe">Placa Mãe</option>
+                  <option value="Memória">Memória</option>
+                  <option value="SSD">SSD</option>
+                  <option value="Fonte">Fonte</option>
+                  <option value="Placa de Vídeo">Placa de Vídeo</option>
+                  <option value="Gabinetes">Gabinetes</option>
+                </select>
+              </label>
+
+              <label>
+                Marca
+                <input type="text" id="catalogBrand" required />
+              </label>
+
+              <label>
+                Preço de custo
+                <input type="number" id="catalogCostPrice" min="0" step="0.01" required />
+              </label>
+
+              <label>
+                Estoque
+                <input type="number" id="catalogStock" min="0" step="1" required />
+              </label>
+
+              <label class="full-span">
+                Observações
+                <textarea id="catalogNotes" rows="3"></textarea>
+              </label>
+
+              <button type="submit">Adicionar peça</button>
+            </form>
+          </section>
+
+          <section id="clientsSection" class="panel">
+            <h3>Clientes</h3>
+            <form id="clientForm" class="grid-form">
+              <label>
+                Nome
+                <input type="text" id="clientName" required />
+              </label>
+
+              <label>
+                Telefone
+                <input type="text" id="clientPhone" />
+              </label>
+
+              <label>
+                E-mail
+                <input type="email" id="clientEmail" />
+              </label>
+
+              <label class="full-span">
+                Observações
+                <textarea id="clientNotes" rows="3"></textarea>
+              </label>
+
+              <div class="form-actions full-span">
+                <button id="clientSubmitButton" type="submit">Salvar cliente</button>
+                <button id="cancelClientEditButton" type="button" class="secondary hidden">Cancelar edição</button>
+              </div>
+            </form>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Telefone</th>
+                    <th>E-mail</th>
+                    <th>Notas</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="clientsTableBody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="quotesSection" class="panel">
+            <h3>Orçamentos</h3>
+
+            <div class="quote-builder">
+              <div class="quote-left">
+                <div class="section-tag">Montagem do PC</div>
+
+                <label>
+                  Cliente
+                  <select id="quoteClientSelect"></select>
+                </label>
+
+                <div class="quick-client">
+                  <div class="quick-client-heading">
+                    <strong>Cliente rápido</strong>
+                    <span>Cadastre nome e telefone durante o orçamento</span>
+                  </div>
+                  <div class="quick-client-fields">
+                    <input type="text" id="quickClientName" placeholder="Nome do cliente" />
+                    <input type="text" id="quickClientPhone" placeholder="Telefone" />
+                    <button id="quickAddClientButton" type="button">Cadastrar e usar</button>
+                  </div>
+                  <p id="quickClientMessage" class="quick-client-message"></p>
+                </div>
+
+                <div id="pcAssemblyMenu" class="pc-assembly-menu"></div>
+
+                <div class="mini-summary">
+                  <div class="mini-stat">
+                    <span>Itens</span>
+                    <strong id="quoteItemsCount">0</strong>
+                  </div>
+                  <div class="mini-stat">
+                    <span>Subtotal</span>
+                    <strong id="miniSubtotalValue">R$ 0,00</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="quote-right">
+                <div class="section-tag success">Resumo do orçamento</div>
+                <div id="quoteItemsList" class="quote-items"></div>
+
+                <div class="quote-totals">
+                  <label>
+                    Desconto (%)
+                    <input type="number" id="quoteDiscount" min="0" max="100" step="0.01" value="0" />
+                  </label>
+                  <label>
+                    Parcelas
+                    <select id="quoteInstallments">
+                      <option value="1">À vista</option>
+                      <option value="2">2x</option>
+                      <option value="3">3x</option>
+                      <option value="6">6x</option>
+                      <option value="10">10x</option>
+                      <option value="12">12x</option>
+                    </select>
+                  </label>
+                  <label>
+                    Margem de lucro (%)
+                    <input type="number" id="quoteProfitMargin" min="0" step="0.1" value="0" />
+                  </label>
+                  <label>
+                    Juros do cartão (%)
+                    <input type="number" id="quoteCardInterest" min="0" step="0.01" value="0" />
+                  </label>
+                </div>
+
+                <div class="total-line">
+                  <strong>Custo:</strong>
+                  <span id="costValue">R$ 0,00</span>
+                </div>
+                <div class="total-line">
+                  <strong>Margem de lucro:</strong>
+                  <span id="profitValue">R$ 0,00 (0%)</span>
+                </div>
+                <div class="total-line">
+                  <strong>Subtotal:</strong>
+                  <span id="subtotalValue">R$ 0,00</span>
+                </div>
+                <div class="total-line">
+                  <strong>Desconto:</strong>
+                  <span id="discountValue">R$ 0,00</span>
+                </div>
+                <div class="total-line total-highlight">
+                  <strong>Total:</strong>
+                  <span id="totalValue">R$ 0,00</span>
+                </div>
+                <div class="total-line">
+                  <strong>Juros do cartão:</strong>
+                  <span id="cardInterestValue">R$ 0,00</span>
+                </div>
+                <div class="total-line installment-highlight">
+                  <strong id="installmentLabel">À vista:</strong>
+                  <span id="installmentValue">R$ 0,00</span>
+                </div>
+
+                <div class="quote-actions">
+                  <button id="printQuoteButton" type="button" class="secondary">Imprimir PDF</button>
+                  <button id="saveQuoteButton" class="primary">Salvar orçamento</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="table-wrap quotes-list-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Cliente</th>
+                    <th>Data</th>
+                    <th>Subtotal</th>
+                    <th>Total</th>
+                    <th>WhatsApp</th>
+                  </tr>
+                </thead>
+                <tbody id="quotesTableBody"></tbody>
+              </table>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

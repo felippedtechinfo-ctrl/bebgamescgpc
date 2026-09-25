@@ -1,0 +1,151 @@
+{
+  "settings": {
+    "storeName": "Beb Games",
+    "profitMargin": 30,
+    "defaultDiscount": 0,
+    "defaultShipping": 0
+  },
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "bebgamescg",
+      "name": "Administrador"
+    }
+  ],
+  "catalog": [
+    {
+      "id": 1,
+      "name": "Ryzen 5 5600G",
+      "category": "Processadores",
+      "brand": "AMD",
+      "costPrice": 740,
+      "stock": 10,
+      "notes": "Processador ideal para configurações equilibradas."
+    },
+    {
+      "id": 2,
+      "name": "B550M AORUS ELITE",
+      "category": "Placa Mãe",
+      "brand": "Gigabyte",
+      "costPrice": 820,
+      "stock": 5,
+      "notes": "Socket AM4, ótimo custo-benefício."
+    },
+    {
+      "id": 3,
+      "name": "Corsair Vengeance 16GB",
+      "category": "Memória",
+      "brand": "Corsair",
+      "costPrice": 270,
+      "stock": 12,
+      "notes": "DDR4 3200MHz."
+    },
+    {
+      "id": 4,
+      "name": "SSD 1TB NVMe",
+      "category": "SSD",
+      "brand": "Kingston",
+      "costPrice": 320,
+      "stock": 15,
+      "notes": "Leitura rápida e volume suficiente para jogos."
+    },
+    {
+      "id": 5,
+      "name": "Fonte 750W 80+ Bronze",
+      "category": "Fonte",
+      "brand": "Corsair",
+      "costPrice": 420,
+      "stock": 8,
+      "notes": "Boa eficiência e alta potência."
+    },
+    {
+      "id": 6,
+      "name": "RTX 4060 8GB",
+      "category": "Placa de Vídeo",
+      "brand": "NVIDIA",
+      "costPrice": 2100,
+      "stock": 3,
+      "notes": "Desempenho para jogos em 1080p/1440p."
+    },
+    {
+      "id": 7,
+      "name": "Gabinete Gamer ATX",
+      "category": "Gabinetes",
+      "brand": "DeepCool",
+      "costPrice": 390,
+      "stock": 7,
+      "notes": "Visual gamer com boa ventilação."
+    }
+  ],
+  "clients": [
+    {
+      "id": 1,
+      "name": "Cliente Exemplo",
+      "phone": "(11) 99999-0000",
+      "email": "cliente@exemplo.com",
+      "notes": "Cliente favorito"
+    },
+    {
+      "id": 1790303115489,
+      "name": "Jo�o Teste",
+      "phone": "(11) 98888-1234",
+      "email": "joao@teste.com",
+      "notes": "Cliente teste"
+    },
+    {
+      "id": 1790307846984,
+      "name": "Jose",
+      "phone": "21912345678",
+      "email": "",
+      "notes": ""
+    }
+  ],
+  "quotations": [
+    {
+      "id": 1790303919007,
+      "clientId": "1",
+      "items": [
+        {
+          "id": "1-1790303911685",
+          "itemId": 1,
+          "name": "Ryzen 5 5600G",
+          "quantity": 1,
+          "totalPrice": 962
+        },
+        {
+          "id": "2-1790303916215",
+          "itemId": 2,
+          "name": "B550M AORUS ELITE",
+          "quantity": 1,
+          "totalPrice": 1066
+        }
+      ],
+      "subtotal": 2028,
+      "discount": 0,
+      "shipping": 0,
+      "total": 2028,
+      "notes": "Orçamento gerado pelo sistema Beb Games.",
+      "createdAt": "2026-09-25T02:38:39.007Z"
+    },
+    {
+      "id": 1790303115492,
+      "clientId": 1,
+      "items": [
+        {
+          "id": "1-1",
+          "itemId": 1,
+          "name": "Ryzen 5 5600G",
+          "quantity": 1,
+          "totalPrice": 999.9
+        }
+      ],
+      "subtotal": 999.9,
+      "discount": 0,
+      "shipping": 25,
+      "total": 1024.9,
+      "notes": "Teste",
+      "createdAt": "2026-09-25T02:25:15.492Z"
+    }
+  ]
+}
